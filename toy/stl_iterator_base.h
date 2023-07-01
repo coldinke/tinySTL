@@ -1,6 +1,12 @@
 #ifndef __STL_ITERATOR_H
 #define __STL_ITERATOR_H
 
+#include <cstddef>      // for ptrdiff_t
+#include <type_traits>  // for is_convertible
+
+#include "stl_config.h" // for __STL_BEGIN_NAMESPACE, __STL_END_NAMESAPCE
+#include "utlity.h"     // for forward
+
 __STL_BEGIN_NAMESPACE
 
 struct input_iterator_tag {};
