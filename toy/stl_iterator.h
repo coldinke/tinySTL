@@ -6,7 +6,8 @@
 __STL_BEGIN_NAMESPACE
 
 template <class _Container>
-class back_insert_iterator {
+class back_insert_iterator 
+{
 protected:
     _Container* contanier;
 public:
@@ -29,12 +30,15 @@ public:
 };
 
 template <class _Container>
-inline back_insert_iterator<_Container> back_inserter(_Container& __x) {
+inline back_insert_iterator<_Container> back_inserter(_Container& __x) 
+{
     return back_insert_iterator<_Container>(__x);
 }
 
 template <class _Container>
-class front_insert_iterator {
+class front_insert_iterator 
+{
+
 protected:
     _Container& container;
 public:
@@ -57,12 +61,15 @@ public:
 };
 
 template <class _Container>
-inline front_insert_iterator<_Container> front_inserter(_Container& __x) {
+inline front_insert_iterator<_Container> front_inserter(_Container& __x) 
+{
     return front_insert_iterator<_Container>(__x);
 }
 
 template <class _Container>
-class insert_iterator {
+class insert_iterator 
+{
+
 protected:
     _Container* container;
     typename _Container::iterator    iter;
@@ -89,13 +96,16 @@ public:
 
 template <class _Container, class _Iterator>
 inline
-insert_iterator<_Container> inserter(_Container& __x, _Iterator __i) {
+insert_iterator<_Container> inserter(_Container& __x, _Iterator __i) 
+{
     typedef typename _Container::iteartor   __iter;
     return insert_iterator<_Container>(__x, __iter(__i));
 }
 
 template <class _Iterator>
-class reverse_iterator {
+class reverse_iterator 
+{
+    
 protected:
     _Iterator current;
 public:

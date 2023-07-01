@@ -8,7 +8,8 @@ __STL_BEGIN_NAMESPACE
 
 
 template <class _T, _T v>
-struct _integral_constant {
+struct _integral_constant 
+{
     static constexpr T value = v;
 };
 
