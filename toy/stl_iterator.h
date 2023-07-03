@@ -109,7 +109,7 @@ class reverse_iterator
 protected:
     _Iterator current;
 public:
-    typedef typename iteartor_traits<_Iterator>::iterator_category
+    typedef typename iterator_traits<_Iterator>::iterator_category
             iterator_category;
     typedef typename iterator_traits<_Iterator>::value_type
             value_type;

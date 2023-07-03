@@ -66,7 +66,7 @@ struct iterator_traits
     : public _iterator_traits_helper<_Iterator, _has_iteartor_cat<_Iterator>::value> {};
 
 template <class _T>
-struct iteartor_traits<_T*>
+struct iterator_traits<_T*>
 {
     typedef random_access_iterator_tag       iterator_category;
     typedef _T                               value_type;
@@ -76,7 +76,7 @@ struct iteartor_traits<_T*>
 }
 
 template <class _T>
-struct iteartor_traits<const _T*>
+struct iterator_traits<const _T*>
 {
     typedef random_access_iterator_tag      iterator_category;
     typedef _T                              value_type;
@@ -134,7 +134,7 @@ template <class _Iterator>
 typename iterator_traits<_Iterator>::value_type*
 value_type(const iterator&) 
 {
-    return static_cast<typename iteartor_traits<_Iterator>::value_type*>(0);
+    return static_cast<typename iterator_traits<_Iterator>::value_type*>(0);
 }
 
 template <class _InputIterator>

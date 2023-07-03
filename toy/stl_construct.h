@@ -45,7 +45,7 @@ void __destroy_aux(_ForwardIterator __first, _ForwardIterator __last, std::false
 }
 
 template <class _ForwardIterator>
-inline void __destroy_aux(_ForwardIterator, _ForwardIterator, std::true_type) {}
+void __destroy_aux(_ForwardIterator, _ForwardIterator, std::true_type) {}
 
 template <class _T>
 void destory(_T* __first) 
