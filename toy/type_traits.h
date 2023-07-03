@@ -6,21 +6,14 @@
 
 __STL_BEGIN_NAMESPACE
 
-
-template <class _T, _T v>
-struct _integral_constant 
-{
-    static constexpr T value = v;
+template <class _T, _T v> struct _integral_constant {
+  static constexpr T value = v;
 };
 
-template <bool b>
-using _bool_constant = _integral_constant<bool, b>;
+template <bool b> using _bool_constant = _integral_constant<bool, b>;
 
 typedef _bool_constant<true> true_type;
 typedef _bool_constant<false> false_type;
-
-
-
 
 __STL_END_NAMESAPCE
 
