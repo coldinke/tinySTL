@@ -101,8 +101,7 @@ protected:
   _Iterator current;
 
 public:
-  typedef
-      typename iterator_traits<_Iterator>::iterator_category iterator_category;
+  typedef typename iterator_traits<_Iterator>::iterator_category iterator_category;
   typedef typename iterator_traits<_Iterator>::value_type value_type;
   typedef typename iterator_traits<_Iterator>::difference_type difference_type;
   typedef typename iterator_traits<_Iterator>::pointer pointer;
@@ -114,7 +113,7 @@ public:
 public:
   reverse_iterator() {}
   explicit reverse_iterator(iterator_type __x) : current(__x) {}
-  reverse_iterator(const self &__rhs) : current(__rhs.current) {}
+  reverse_iterator(const _Self &__rhs) : current(__rhs.current) {}
 
 public:
   iterator_type base() const { return current; }
@@ -132,7 +131,7 @@ public:
     --current;
     return __tmp;
   }
-  _Self &operato--() {
+  _Self &operator--() {
     ++current;
     return *this;
   }
@@ -177,7 +176,7 @@ bool operator<(const reverse_iterator<_Iterator> &__lhs,
 template <class _Iterator>
 bool operator!=(const reverse_iterator<_Iterator> &__lhs,
                 const reverse_iterator<_Iterator> &__rhs) {
-  return !(lhs == rhs);
+  return !(__lhs == __rhs);
 }
 
 template <class _Iterator>
@@ -187,7 +186,7 @@ bool operator>(const reverse_iterator<_Iterator> &__lhs,
 }
 
 template <class _Iterator>
-    bool opearator <= (const reverse_iterator<_Iterator> &__lhs,
+    bool operator <= (const reverse_iterator<_Iterator> &__lhs,
                        const reverse_iterator<_Iterator> &__rhs) {
   return !(__rhs < __lhs);
 }

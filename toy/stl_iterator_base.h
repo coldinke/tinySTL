@@ -18,11 +18,11 @@ struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 template <class _Category, class _T, class _Distance = ptrdiff_t,
           class _Pointer = _T*, class _Reference = _T&>
 struct iterator {
-  typedef _Category iterator_category;
-  typedef _T value_type;
-  typedef _Distance difference_type;
-  typedef _Pointer pointer;
-  typedef _Reference reference;
+  typedef _Category     iterator_category;
+  typedef _T            value_type;
+  typedef _Distance     difference_type;
+  typedef _Pointer      pointer;
+  typedef _Reference    reference;
 };
 
 template <class _T>
@@ -40,15 +40,15 @@ public:
 };
 
 template <class _Iterator, bool>
-struct _iterator_traits {
+struct _iterator_traits_impl {
 };
 
-template <class _Iterator> struct _iterator_traits<_Iterator, true> {
-  typedef typename _Iterator::iterator_category iterator_category;
-  typedef typename _Iterator::value_type value_type;
-  typedef typename _Iterator::difference_type difference_type;
-  typedef typename _Iterator::pointer pointer;
-  typedef typename _Iterator::reference reference;
+template <class _Iterator> struct _iterator_traits_impl<_Iterator, true> {
+  typedef typename _Iterator::iterator_category     iterator_category;
+  typedef typename _Iterator::value_type            value_type;
+  typedef typename _Iterator::difference_type       difference_type;
+  typedef typename _Iterator::pointer               pointer;
+  typedef typename _Iterator::reference             reference;
 };
 
 template <class _Iterator, bool>
@@ -57,41 +57,39 @@ struct _iterator_traits_helper {
 
 template <class _Iterator>
 struct _iterator_traits_helper<_Iterator, true>
-    : public _iterator_traits<
-          _Iterator,
-          std::is_convertible<typename _Iterator::iterator_category,
-                             input_iterator_tag>::value ||
-              std::is_convertible<typename _Iterator::iterator_category,
-                                 output_iterator_tag>::value> {};
+    : public _iterator_traits_impl<_Iterator,
+          std::is_convertible<typename _Iterator::iterator_category, input_iterator_tag>::value ||
+          std::is_convertible<typename _Iterator::iterator_category, output_iterator_tag>::value> 
+{};
 
 template <class _Iterator>
 struct iterator_traits
-    : public _iterator_traits_helper<_Iterator,
-                                     _has_iteartor_cat<_Iterator>::value> {};
+    : public _iterator_traits_helper<_Iterator, _has_iteartor_cat<_Iterator>::value> 
+{};
 
 template <class _T> struct iterator_traits<_T *> {
-  typedef random_access_iterator_tag iterator_category;
-  typedef _T value_type;
-  typedef ptrdiff_t difference_type;
-  typedef _T *pointer;
-  typedef _T &reference;
+  typedef random_access_iterator_tag              iterator_category;
+  typedef _T                                      value_type;
+  typedef ptrdiff_t                               difference_type;
+  typedef _T*                                     pointer;
+  typedef _T&                                     reference;
 };
 
 template <class _T>
 struct iterator_traits<const _T *> {
-  typedef random_access_iterator_tag iterator_category;
-  typedef _T value_type;
-  typedef ptrdiff_t difference_type;
-  typedef const _T *pointer;
-  typedef const _T &reference;
+  typedef random_access_iterator_tag              iterator_category;
+  typedef _T                                      value_type;
+  typedef ptrdiff_t                               difference_type;
+  typedef const _T*                               pointer;
+  typedef const _T&                               reference;
 };
 
 template <class _T1, class _T2,
           bool = _has_iteartor_cat<iterator_traits<_T1>>::value>
 struct has_iterator_cat_of
     : public _bool_constant<std::is_convertible<
-          typename iterator_traits<_T1>::iterator_category, _T2>::value> {
-};
+      typename iterator_traits<_T1>::iterator_category, _T2>::value> 
+{};
 
 template <class _T1, class _T2>
 struct has_iterator_cat_of<_T1, _T2, false> : public false_type {};
@@ -124,7 +122,7 @@ struct is_iterator
 template <class _Iterator>
 typename iterator_traits<_Iterator>::iterator_category
 iterator_category(const _Iterator &) {
-  typedef typename _iterator_traits<_Iterator>::iterator_category _Category;
+  typedef typename iterator_traits<_Iterator>::iterator_category _Category;
   return _Category();
 }
 
@@ -135,32 +133,33 @@ difference_type(const _Iterator &) {
 }
 
 template <class _Iterator>
-typename iterator_traits<_Iterator>::value_type *value_type(const iterator &) {
+typename iterator_traits<_Iterator>::value_type*
+value_type(const _Iterator &) {
   return static_cast<typename iterator_traits<_Iterator>::value_type *>(0);
 }
 
 template <class _InputIterator>
-typename type_traits<_InputIterator>::difference_type
-__distance(_InputIterator first, _InputIterator last, input_iterator_tag) {
-  typename type_traits<_InputIterator>::difference_type __result = 0;
-  while (first != last) {
-    ++first;
+typename iterator_traits<_InputIterator>::difference_type
+__distance(_InputIterator __first, _InputIterator __last, input_iterator_tag) {
+  typename iterator_traits<_InputIterator>::difference_type __result = 0;
+  while (__first != __last) {
+    ++__first;
     ++__result;
   }
   return __result;
 }
 
 template <class _RandomIterator>
-typename type_traits<_RandomIterator>::difference_type
-__distance(_RandomIterator first, _RandomIterator last,
+typename iterator_traits<_RandomIterator>::difference_type
+__distance(_RandomIterator __first, _RandomIterator __last,
            random_access_iterator_tag) {
-  typename type_traits<_RandomIterator>::difference_type __result = 0;
-  __result = last - first;
+  typename iterator_traits<_RandomIterator>::difference_type __result = 0;
+  __result = __last - __first;
   return __result;
 }
 
 template <class _Iterator>
-typename type_traits<_Iterator>::difference_type distance(_Iterator first,
+typename iterator_traits<_Iterator>::difference_type distance(_Iterator first,
                                                           _Iterator last) {
   return __distance(first, last, iterator_category(first));
 }
@@ -168,15 +167,15 @@ typename type_traits<_Iterator>::difference_type distance(_Iterator first,
 template <class _InputIterator, class _Distance>
 void __advance(_InputIterator __iter, _Distance __n, input_iterator_tag) {
   while (__n--)
-    ++_iter;
+    ++__iter;
 }
 
 template <class _BidireIterator, class _Distance>
 void __advance(_BidireIterator __iter, _Distance __n,
                bidirectional_iterator_tag) {
-  if (n >= 0) {
+  if (__n >= 0) {
     while (__n--)
-      ++__iter
+      ++__iter;
   } else {
     while (__n++)
       --__iter;

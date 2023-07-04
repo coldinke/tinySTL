@@ -4,6 +4,7 @@
 #include "stl_config.h"
 #include "stl_iterator_base.h"
 #include "utlity.h"
+#include "stl_pair.h"
 
 __STL_BEGIN_NAMESPACE
 
@@ -85,10 +86,10 @@ _OutputIter copy(_InputIter __first, _InputIter __last, _OutputIter __result) {
 //  b. random_iterator
 template <class _BidirectionalIter1, class _BidirectionalIter2>
 _BidirectionalIter2 __copy_backward(_BidirectionalIter1 __first,
-                                    _BidirectionalIter1 __lasst,
+                                    _BidirectionalIter1 __last,
                                     _BidirectionalIter2 __result,
                                     toystl::bidirectional_iterator_tag) {
-  whlie(__first != __last) * (--__result) = *(--__lasst);
+  whlie(__first != __last) * (--__result) = *(--__last);
   return __result;
 }
 
@@ -142,10 +143,17 @@ __copy_n(_InputIter __first, _Size __n, _InputIter __result, toystl::input_itera
 
 template <class _RandomIter, class _Size, class _OutputIter>
 toystl::pair<_RandomIter, _OutputIter>
-__copy_n(_RandomIter __first, _Size __size, _OutputIter __result, toystl::random_access_iterator_tag)
+__copy_n(_RandomIter __first, _Size __n, _OutputIter __result, toystl::random_access_iterator_tag)
 {
   auto __last = __first + __n;
   return toystl::pair<_RandomIter, _OutputIter>(__last, toystl::copy(__first, __last, __result));
+}
+
+template <class _InputIter, class _Size, class _OutputIter>
+toystl::pair<_InputIter, _OutputIter>
+copy_n(_InputIter __first, _Size __n, _OutputIter __result)
+{
+  return __copy_n(__first, __n, __result, iterator_category(__first));
 }
 
 // fill and fill_n
@@ -163,33 +171,35 @@ typename std::enable_if<std::is_integral<_ForwardIter>::value &&
                             !std::is_same<_ForwardIter, bool>::value &&
                             std::is_integral<_Tp>::value && sizeof(_Tp) == 1,
                         _Tp *>::type
-__fill_n(_ForwardIter *__first, Size __n, _Up &__value) {
+__fill_n(_ForwardIter *__first, Size __n, _Tp &__value) {
   if (__n > 0) {
     memset(__first, (unsigned char)__value, (size_t)__n);
   }
   return __first + __n;
 }
 
-template <class _OutputIter, class Size, class _Tp>
-_OutputIter fill_n(_OutputIter __first, Size __n, const T &__value) {
+template <class _OutputIter, class _Size, class _Tp>
+_OutputIter fill_n(_OutputIter __first, _Size __n, const _Tp &__value) {
   return __fill_n(__first, __n, __value);
 }
 
 template <class _ForwardIter, class _Tp>
-void __fill(_ForwardIter first, _ForwardIter last, const _Tp &__value) {
+void __fill(_ForwardIter first, _ForwardIter last, const _Tp &__value,
+  toystl::forward_iterator_tag) {
   for (; first != last; ++first)
     *first = __value;
 }
 
 template <class _RandomIter, class _Tp>
-void __fill(_RandomIter __first, _RandomIter __last, const _Tp &__value) {
+void __fill(_RandomIter __first, _RandomIter __last, const _Tp &__value,
+  toystl::random_access_iterator_tag) {
   fill_n(__first, __last - __first, __value);
 }
 
 template <class _ForwardIter, class _Tp>
-void fill(_FrowardIterator __first, _ForwardIterator __last,
+void fill(_ForwardIter __first, _ForwardIter __last,
           const _Tp &__value) {
-  __fill(__first, __last, __value);
+  __fill(__first, __last, __value, iterator_category(__first));
 }
 
 // equal and mismatch, because not implements pair, so not implements mismatch

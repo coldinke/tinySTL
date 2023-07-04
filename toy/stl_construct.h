@@ -46,11 +46,12 @@ template <class _T> void destory(_T *__first) {
 }
 
 template <class _ForwardIterator>
-void destroy(_ForwardIterator __first, _ForwardIterator __last){
-  __destroy_aux(
-    __first, __last,
+void destroy(_ForwardIterator __first, _ForwardIterator __last)
+{
+  __destroy_aux(__first, __last,
     std::is_trivially_destructible<
-        typename iterator_traits<_ForwardIterator>::value_type>{})}
+        typename iterator_traits<_ForwardIterator>::value_type>{});
+}
 
 __STL_END_NAMESAPCE
 

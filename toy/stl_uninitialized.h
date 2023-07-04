@@ -12,7 +12,7 @@ __STL_BEGIN_NAMESPACE
 template <class _InputIter, class _ForwardIter>
 _ForwardIter __uninitialized_copy(_InputIter __first, _InputIter __last,
                                   _ForwardIter __result, std::true_type) {
-  return toystl::copy(first, last, result);
+  return toystl::copy(__first, __last, __result);
 }
 
 template <class _InputIter, class _ForwardIter>
@@ -55,7 +55,7 @@ _ForwardIter __uninitialized_copy_n(_InputIter __first, _Size __n,
     toystl::destroy(__result, __cur);
     throw;
   }
-  return cur;
+  return __cur;
 }
 
 template <class _InputIter, class _Size, class _ForwardIter>

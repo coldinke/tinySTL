@@ -20,7 +20,7 @@ public:
   typedef _T *pointer;
   typedef const _T *const_pointer;
   typedef _T &reference;
-  typdef const _T &const_reference;
+  typedef const _T& const_reference;
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
 
@@ -42,12 +42,12 @@ public:
   static void destroy(pointer __first, pointer __last);
 };
 
-template <class _T> _T allocator<_T>::allocate() {
+template <class _T> _T* allocator<_T>::allocate() {
   return static_cast<pointer>(::operator new(sizeof(_T)));
 }
 
-template <class _T> _T allocator<_T>::allocate(size_type __n) {
-  return __n == 0 : nullptr
+template <class _T> _T* allocator<_T>::allocate(size_type __n) {
+  return __n == 0 ? nullptr
       : static_cast<pointer>(::operator new(sizeof(_T) * __n));
 }
 

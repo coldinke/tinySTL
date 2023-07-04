@@ -43,38 +43,38 @@ template <class _T1, class _T2> struct pair {
   pair(pair &&rhs) = default;
 
   template <class _U1, class _U2,
-            typeaname std::enable_if<
-                std::is_convertible<_T1, const _U1 &>::value &&
-                    std::is_convertible<_T2, const _U2 &>::value &&
-                    std::is_constructible<_T1, const _U1 &>::value &&
-                    std::is_constructible<_T2, const _U2 &>::value,
-                int>::type = 0>
-  const pair(const pair<_U1, _U2> &rhs)
-      : first(rhs.first), second(rhs.second) {}
-
-  template <class _U1, class _U2,
-            typeaname std::enable_if<
-                std::is_convertible<_T1, const _U1 &>::value &&
-                    std::is_convertible<_T2, const _U2 &>::value &&
-                    (!std::is_constructible<_T1, const _U1 &>::value ||
-                     !std::is_constructible<_T2, const _U2 &>::value),
-                int>::type = 0>
-  explicit const pair(pair<_U1, _U2> &rhs)
-      : first(rhs.first), second(rhs.second) {}
-
-  template <class _U1, class _U2,
             typename std::enable_if<
                 std::is_convertible<_T1, const _U1 &>::value &&
                     std::is_convertible<_T2, const _U2 &>::value &&
                     std::is_constructible<_T1, const _U1 &>::value &&
                     std::is_constructible<_T2, const _U2 &>::value,
                 int>::type = 0>
-  const pair(pair<_U1, _U2> &&rhs)
+  constexpr pair(const pair<_U1, _U2> &rhs)
+      : first(rhs.first), second(rhs.second) {}
+
+  template <class _U1, class _U2,
+            typename std::enable_if<
+                std::is_convertible<_T1, const _U1 &>::value &&
+                    std::is_convertible<_T2, const _U2 &>::value &&
+                    (!std::is_constructible<_T1, const _U1 &>::value ||
+                     !std::is_constructible<_T2, const _U2 &>::value),
+                int>::type = 0>
+  explicit constexpr pair(const pair<_U1, _U2> &rhs)
+      : first(rhs.first), second(rhs.second) {}
+
+  template <class _U1, class _U2,
+            typename std::enable_if<
+                std::is_convertible<_T1, _U1 &>::value &&
+                    std::is_convertible<_T2, _U2 &>::value &&
+                    std::is_constructible<_T1, _U1 &>::value &&
+                    std::is_constructible<_T2, _U2 &>::value,
+                int>::type = 0>
+  constexpr pair(pair<_U1, _U2> &&rhs)
       : first(toystl::forward<_U1>(rhs.first)),
         second(toystl::forward<_U2>(rhs.second)) {}
 
   template <class _U1, class _U2,
-            typeaname std::enable_if<
+            typename std::enable_if<
                 std::is_convertible<_T1, const _U1 &>::value &&
                     std::is_convertible<_T2, const _U2 &>::value &&
                     (!std::is_constructible<_T1, const _U1 &>::value ||
