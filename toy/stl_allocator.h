@@ -6,8 +6,9 @@
  * 一个模版类 allocator， 用于管理内存的分配、释放、对象的构造和析构
  */
 
-#include "construct.h"
-#include "util.h"
+#include "stl_config.h"
+#include "stl_construct.h"
+#include "utlity.h"
 
 #include <new>
 
@@ -19,12 +20,13 @@ public:
   typedef _T *pointer;
   typedef const _T *const_pointer;
   typedef _T &reference;
+  typdef const _T &const_reference;
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
 
 public:
-  static T *allocate();
-  static T *allocate(size_type __n);
+  static _T *allocate();
+  static _T *allocate(size_type __n);
 
   static void deallocate(reference __p);
   static void deallocate(pointer __p, size_type __n);
@@ -40,19 +42,19 @@ public:
   static void destroy(pointer __first, pointer __last);
 };
 
-template <class _T> void allocator<_T>::allocate() {
+template <class _T> _T allocator<_T>::allocate() {
   return static_cast<pointer>(::operator new(sizeof(_T)));
 }
 
-template <class _T> void allocator<_T>::allocate(size_type __n) {
+template <class _T> _T allocator<_T>::allocate(size_type __n) {
   return __n == 0 : nullptr
       : static_cast<pointer>(::operator new(sizeof(_T) * __n));
 }
 
 template <class _T> void allocator<_T>::deallocate(reference __p) {
-  if (nullptr == __n)
+  if (nullptr == __p)
     return;
-  ::opearator delete (__p);
+  ::operator delete(__p);
 }
 
 template <class _T>

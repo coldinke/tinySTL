@@ -7,9 +7,15 @@ implementing the vector and prefix equpment.
 
 ## Build and Test
 
-TODO
+This projcect uses Cmake for building and testing.
+
+### Cmake:
+Example, compiling and test
 ```bash
-TODO
+mkdir build
+cd build
+cmake ..
+make
 ```
 
 

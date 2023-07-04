@@ -1,22 +1,28 @@
 #ifndef __STL_UTIL_H
 #define __STL_UTIL_H
 
+#include "stl_config.h"
+#include <cstddef>
+#include "type_traits.h"
+
+__STL_BEGIN_NAMESPACE
+
 // move for rvalue
 template <class _T>
-typename std::remove_reference<_T>::type &&move(T &&__arg) noexcept {
-  return static_cast<typename std::remove_reference<_T>::type &&>(__arg);
+typename std::remove_reference<_T>::type &&move(_T &&__arg) noexcept {
+  return static_cast<typename std::remove_reference<_T>::type&&>(__arg);
 }
 
 // forward for lvalue
-template <class _T> T &&forward(_T &__arg) noexcept {
+template <class _T> _T &&forward(_T &__arg) noexcept {
 
   return static_cast<_T &&>(__arg);
 }
 
 // forward for rvalue
 template <class _T>
-T &&forward(typename std::remove_reference<_T>::type &&__arg) noexcept {
-  static_assert(!std::is_lvalue_refeerence<_T>::value, "Wrong froward");
+_T &&forward(typename std::remove_reference<_T>::type &&__arg) noexcept {
+  static_assert(!std::is_lvalue_reference<_T>::value, "Wrong froward");
   return static_cast<_T &&>(__arg);
 }
 
@@ -41,9 +47,10 @@ _ForwardIterator2 swap_range(_ForwardIterator1 __first1,
   return __first2;
 }
 
-template <class _Tp, size_t _N>
-void swap(_Tp (&__a)[_N], _Tp (&__b)[_N]) noexcept {
+template <class _T, size_t _N>
+void swap(_T (&__a)[_N], _T (&__b)[_N]) noexcept {
   toystl::swap_range(__a, __a + _N, __b);
 }
 
+__STL_END_NAMESAPCE
 #endif

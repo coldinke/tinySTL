@@ -3,7 +3,7 @@
 
 #include "stl_config.h"
 #include "stl_iterator_base.h"
-#include "util.h"
+#include "utlity.h"
 
 __STL_BEGIN_NAMESPACE
 
@@ -130,6 +130,23 @@ _BidirectionalIter2 copy_backward(_BidirectionalIter1 __first,
 // copy_n
 // template <class _InputIterator, class _Size, class _OutputIterator>
 // inline
+template <class _InputIter, class _Size, class _OutputIter>
+toystl::pair<_InputIter, _OutputIter>
+__copy_n(_InputIter __first, _Size __n, _InputIter __result, toystl::input_iterator_tag)
+{
+  for (; __n > 0; --__n, ++__first, ++__result) {
+    *__result = *__first;
+  }
+  return toystl::pair<_InputIter, _OutputIter>(__first, __result);
+}
+
+template <class _RandomIter, class _Size, class _OutputIter>
+toystl::pair<_RandomIter, _OutputIter>
+__copy_n(_RandomIter __first, _Size __size, _OutputIter __result, toystl::random_access_iterator_tag)
+{
+  auto __last = __first + __n;
+  return toystl::pair<_RandomIter, _OutputIter>(__last, toystl::copy(__first, __last, __result));
+}
 
 // fill and fill_n
 template <class _OutputIter, class _Size, class _Tp>

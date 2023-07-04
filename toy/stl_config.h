@@ -3,3 +3,5 @@
 
 #define __STL_BEGIN_NAMESPACE namespace toystl {
 #define __STL_END_NAMESAPCE }
+
+#endif

@@ -7,7 +7,7 @@
 __STL_BEGIN_NAMESPACE
 
 template <class _T, _T v> struct _integral_constant {
-  static constexpr T value = v;
+  static constexpr _T value = v;
 };
 
 template <bool b> using _bool_constant = _integral_constant<bool, b>;
