@@ -32,5 +32,6 @@
 *.app
 
 # Specific folden
-build/
-.vscode/
+build
+
+.vscode/*
