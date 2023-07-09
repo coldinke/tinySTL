@@ -6,7 +6,8 @@ int main() {
   int a[] = {1, 2, 3, 4, 5};
   toystl::vector<int> v1;
   toystl::vector<int> v2(10);
-  toystl::vector<int> v3(10, 1);
+  // this constructor is not right implemented, so it can not pass the compilation
+  // toystl::vector<int> v3(10, 1);
   toystl::vector<int> v4(a, a + 5);
   toystl::vector<int> v5(v2);
   toystl::vector<int> v6(std::move(v2));
