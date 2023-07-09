@@ -1,10 +1,12 @@
 #ifndef __STL_ALGOBASE_H
 #define __STL_ALGOBASE_H
 
+#include <cstring>
+
 #include "stl_config.h"
 #include "stl_iterator_base.h"
-#include "utlity.h"
 #include "stl_pair.h"
+#include "utlity.h"
 
 __STL_BEGIN_NAMESPACE
 
@@ -19,11 +21,13 @@ void iter_swap(_ForwardIterator1 __lhs, _ForwardIterator2 __rhs) {
 #undef min
 #undef max
 
-template <class _Tp> inline const _Tp &min(const _Tp &__a, const _Tp &__b) {
+template <class _Tp>
+inline const _Tp &min(const _Tp &__a, const _Tp &__b) {
   return __b < __a ? __b : __a;
 }
 
-template <class _Tp> inline const _Tp &max(const _Tp &__a, const _Tp &__b) {
+template <class _Tp>
+inline const _Tp &max(const _Tp &__a, const _Tp &__b) {
   return __a < __b ? __b : __a;
 }
 
@@ -43,8 +47,7 @@ inline const _Tp &max(const _Tp &__a, const _Tp &__b, _Compare __comp) {
 template <class _InputIter, class _OutputIter>
 inline _OutputIter __copy(_InputIter __first, _InputIter __last,
                           _OutputIter __result, input_iterator_tag) {
-  for (; __first != __last; ++__result, ++__first)
-    *__result = *__first;
+  for (; __first != __last; ++__result, ++__first) *__result = *__first;
   return __result;
 }
 
@@ -69,8 +72,7 @@ typename std::enable_if<
     _Up *>::type
 _copy_aux(_Tp *__first, _Tp *__last, _Up *__result) {
   const size_t __n = static_cast<size_t>(__last - __first);
-  if (0 != __n)
-    memmove(__result, __first, sizeof(_Tp) * (__last - __first));
+  if (0 != __n) memmove(__result, __first, sizeof(_Tp) * (__last - __first));
   return __result + __n;
 }
 
@@ -97,8 +99,7 @@ template <class _RandomIter, class _BidirectionalIter>
 _BidirectionalIter __copy_backward(_RandomIter __first, _RandomIter __last,
                                    _BidirectionalIter __result,
                                    toystl::random_access_iterator_tag) {
-  for (auto __n = __last - __first; __n > 0; --__n)
-    *(--__result) = *(--__last);
+  for (auto __n = __last - __first; __n > 0; --__n) *(--__result) = *(--__last);
   return __result;
 }
 
@@ -116,8 +117,7 @@ typename std::enable_if<
     _Up *>::type
 __copy_backward__dispatch(_Tp *__first, _Tp *__last, _Up *__result) {
   const size_t __n = static_cast<size_t>(__last - __first);
-  if (0 != __n)
-    memmove(__result - __n, __first, sizeof(_Tp) * __n);
+  if (0 != __n) memmove(__result - __n, __first, sizeof(_Tp) * __n);
   return __result - __n;
 }
 
@@ -132,9 +132,9 @@ _BidirectionalIter2 copy_backward(_BidirectionalIter1 __first,
 // template <class _InputIterator, class _Size, class _OutputIterator>
 // inline
 template <class _InputIter, class _Size, class _OutputIter>
-toystl::pair<_InputIter, _OutputIter>
-__copy_n(_InputIter __first, _Size __n, _InputIter __result, toystl::input_iterator_tag)
-{
+toystl::pair<_InputIter, _OutputIter> __copy_n(_InputIter __first, _Size __n,
+                                               _InputIter __result,
+                                               toystl::input_iterator_tag) {
   for (; __n > 0; --__n, ++__first, ++__result) {
     *__result = *__first;
   }
@@ -142,25 +142,72 @@ __copy_n(_InputIter __first, _Size __n, _InputIter __result, toystl::input_itera
 }
 
 template <class _RandomIter, class _Size, class _OutputIter>
-toystl::pair<_RandomIter, _OutputIter>
-__copy_n(_RandomIter __first, _Size __n, _OutputIter __result, toystl::random_access_iterator_tag)
-{
+toystl::pair<_RandomIter, _OutputIter> __copy_n(
+    _RandomIter __first, _Size __n, _OutputIter __result,
+    toystl::random_access_iterator_tag) {
   auto __last = __first + __n;
-  return toystl::pair<_RandomIter, _OutputIter>(__last, toystl::copy(__first, __last, __result));
+  return toystl::pair<_RandomIter, _OutputIter>(
+      __last, toystl::copy(__first, __last, __result));
 }
 
 template <class _InputIter, class _Size, class _OutputIter>
-toystl::pair<_InputIter, _OutputIter>
-copy_n(_InputIter __first, _Size __n, _OutputIter __result)
-{
+toystl::pair<_InputIter, _OutputIter> copy_n(_InputIter __first, _Size __n,
+                                             _OutputIter __result) {
   return __copy_n(__first, __n, __result, iterator_category(__first));
 }
+
+// move
+template <class _InputIter, class _OutputIter>
+_OutputIter
+__move(_InputIter __first, _InputIter __last, _OutputIter __result, toystl::input_iterator_tag) {
+  for (; __first != __last; ++__first, ++__result)
+  {
+    *__result = toystl::move(*__first);
+  }
+  return __result;
+}
+
+template <class _RandomIter, class _OutputIter>
+_OutputIter
+__move(_RandomIter __first, _RandomIter __last, _OutputIter __result,
+  toystl::random_access_iterator_tag)
+  {
+    for (auto __n = __last - __first; __n > 0; --__n, ++__first, ++__result)
+    {
+      *__result = toystl::move(*__first);
+    }
+    return __result;
+  }
+
+template <class _InputIter, class _OutputIter>
+_OutputIter _move(_InputIter __first, _InputIter __last, _OutputIter __result)
+{
+  return __move(__first, __last, __result, iterator_category(__first));
+}
+
+template <class _Tp, class _Up>
+typename std::enable_if<
+  std::is_same<typename std::remove_const<_Tp>::type, _Up>::value &&
+  std::is_trivially_move_assignable<_Up>::value,
+  _Up*>::type
+_move(_Tp* __first, _Tp* __last, _Up* __result)
+{
+  const size_t n = static_cast<size_t>(__last - __first);
+  if (n != 0)
+    std::memmove(__result, __first, n * sizeof(_Up));
+  return __result + n;
+}
+
+template <class _InputIter, class _OutputIter>
+_OutputIter move(_InputIter __first, _InputIter __last, _OutputIter __result) {
+  return _move(__first, __last, __result);
+}
+
 
 // fill and fill_n
 template <class _OutputIter, class _Size, class _Tp>
 _OutputIter __fill_n(_OutputIter __first, _Size __n, const _Tp &__value) {
-  for (; __n > 0; --__n, ++__first)
-    *__first = __value;
+  for (; __n > 0; --__n, ++__first) *__first = __value;
   return __first;
 }
 
@@ -185,20 +232,18 @@ _OutputIter fill_n(_OutputIter __first, _Size __n, const _Tp &__value) {
 
 template <class _ForwardIter, class _Tp>
 void __fill(_ForwardIter first, _ForwardIter last, const _Tp &__value,
-  toystl::forward_iterator_tag) {
-  for (; first != last; ++first)
-    *first = __value;
+            toystl::forward_iterator_tag) {
+  for (; first != last; ++first) *first = __value;
 }
 
 template <class _RandomIter, class _Tp>
 void __fill(_RandomIter __first, _RandomIter __last, const _Tp &__value,
-  toystl::random_access_iterator_tag) {
+            toystl::random_access_iterator_tag) {
   fill_n(__first, __last - __first, __value);
 }
 
 template <class _ForwardIter, class _Tp>
-void fill(_ForwardIter __first, _ForwardIter __last,
-          const _Tp &__value) {
+void fill(_ForwardIter __first, _ForwardIter __last, const _Tp &__value) {
   __fill(__first, __last, __value, iterator_category(__first));
 }
 
@@ -207,8 +252,7 @@ template <class _InputIter1, class _InputIter2>
 inline bool equal(_InputIter1 __first1, _InputIter1 __last1,
                   _InputIter2 __first2) {
   for (; __first1 != __last1; ++__first1, ++__first2) {
-    if (*__first1 != *__first2)
-      return false;
+    if (*__first1 != *__first2) return false;
   }
   return true;
 }
@@ -217,16 +261,66 @@ template <class _InputIter1, class _InputIter2, class _Compare>
 inline bool equal(_InputIter1 __first1, _InputIter1 __last1,
                   _InputIter2 __first2, _Compare __comp) {
   for (; __first1 != __last1; ++__first1, ++__first2) {
-    if (!__comp(*__first1, *__first2))
-      return false;
+    if (!__comp(*__first1, *__first2)) return false;
   }
   return true;
 }
 
 // lexicographical
-// template <class _InputIter1, class _InputIter2>
-// bool lexicographical_compare(_InputIter1 __first, _InputIter)
-// !TODO
+template <class _InputIter1, class _InputIter2>
+bool lexicographical_compare(_InputIter1 __first1, _InputIter1 __last1,
+                             _InputIter2 __first2, _InputIter2 __last2) {
+  for (; __first1 != __last1 && __first2 != __last2; ++__first1, ++__first2) {
+    if (*__first1 < *__first2) return true;
+    if (*__first2 < *__first1) return false;
+  }
+  return __first1 == __last1 && __first2 != __last2;
+}
+
+template <class _InputIter1, class _InputIter2, class _Compare>
+bool lexicographical_compare(_InputIter1 __first1, _InputIter1 __last1,
+                             _InputIter2 __first2, _InputIter2 __last2,
+                             _Compare __comp) {
+  for (; __first1 != __last1 && __first2 != __last2; ++__first1, ++__first2) {
+    if (__comp(*__first1, *__first2)) return true;
+    if (__comp(*__first2, *__first1)) return false;
+  }
+  return __first1 == __first2 && __first2 != __last2;
+}
+
+bool lexicographical_compare(const unsigned char *__first1,
+                             const unsigned char *__last1,
+                             const unsigned char *__first2,
+                             const unsigned char *__last2) {
+  const auto __len1 = __last1 - __first1;
+  const auto __len2 = __last2 - __first2;
+  const auto __result = memcmp(__first1, __first2, min(__len1, __len2));
+  return __result != 0 ? __result < 0 : __len1 < __len2;
+}
+
+// mismatch
+template <class _InputIter1, class _InputIter2>
+toystl::pair<_InputIter1, _InputIter2>
+mismatch(_InputIter1 __first1, _InputIter1 __last1, _InputIter2 __first2) {
+  while (__first1 != __first2 && *__first1 == *__first2)
+  {
+    ++__first1;
+    ++__first2;   
+  }
+  return toystl::pair<_InputIter1, _InputIter2>(__first1, __first2);
+}
+
+template <class _InputIter1, class _InputIter2, class _BinaryPredicate>
+toystl::pair<_InputIter1, _InputIter2>
+mismatch(_InputIter1 __first1, _InputIter1 __last1, _InputIter2 __first2, _BinaryPredicate __comp)
+{
+  while (__first1 != __last1 && __comp(*__first1, *__first2)) 
+  {
+    ++__first1;
+    ++__first2;
+  }
+  return toystl::pair<_InputIter1, _InputIter2>(__first1, __first2);
+}
 
 __STL_END_NAMESAPCE
 

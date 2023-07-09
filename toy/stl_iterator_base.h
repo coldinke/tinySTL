@@ -1,7 +1,7 @@
 #ifndef __STL_ITERATOR_BASE_H
 #define __STL_ITERATOR_BASE_H
 
-#include <cstddef>     // for ptrdiff_t
+#include <cstddef>      // for ptrdiff_t
 #include "type_traits.h"// for is_convertible
 
 #include "stl_config.h" // for __STL_BEGIN_NAMESPACE, __STL_END_NAMESAPCE
@@ -25,9 +25,10 @@ struct iterator {
   typedef _Reference    reference;
 };
 
-template <class _T>
-struct _has_iteartor_cat {
+// iterator traits
 
+template <class _T>
+struct _has_iterator_cat {
 private:
   struct two {
     char a;
@@ -64,7 +65,7 @@ struct _iterator_traits_helper<_Iterator, true>
 
 template <class _Iterator>
 struct iterator_traits
-    : public _iterator_traits_helper<_Iterator, _has_iteartor_cat<_Iterator>::value> 
+    : public _iterator_traits_helper<_Iterator, _has_iterator_cat<_Iterator>::value> 
 {};
 
 template <class _T> struct iterator_traits<_T *> {
@@ -85,7 +86,7 @@ struct iterator_traits<const _T *> {
 };
 
 template <class _T1, class _T2,
-          bool = _has_iteartor_cat<iterator_traits<_T1>>::value>
+          bool = _has_iterator_cat<iterator_traits<_T1>>::value>
 struct has_iterator_cat_of
     : public _bool_constant<std::is_convertible<
       typename iterator_traits<_T1>::iterator_category, _T2>::value> 

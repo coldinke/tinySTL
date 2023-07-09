@@ -52,5 +52,16 @@ void swap(_T (&__a)[_N], _T (&__b)[_N]) noexcept {
   toystl::swap_range(__a, __a + _N, __b);
 }
 
+
+/*---------------------------------------
+  memory operations
+*/
+
+template <class _Tp>
+constexpr _Tp* address_of(_Tp& __value) noexcept
+{
+  return &__value;
+}
+
 __STL_END_NAMESAPCE
 #endif
