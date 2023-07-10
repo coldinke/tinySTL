@@ -6,7 +6,9 @@
 
 __STL_BEGIN_NAMESPACE
 
-template <class _T1, class _T2> struct pair {
+template <class _T1, class _T2>
+struct pair
+{
   typedef _T1 first_type;
   typedef _T2 second_type;
 
@@ -84,28 +86,36 @@ template <class _T1, class _T2> struct pair {
       : first(toystl::forward<_U1>(rhs.first)),
         second(toystl::forward<_U2>(rhs.second)) {}
 
-  pair &operator=(pair &rhs) {
-    if (this != rhs) {
+  pair &operator=(pair &rhs)
+  {
+    if (this != rhs)
+    {
       first = rhs.first;
       second = rhs.second;
     }
     return *this;
   }
 
-  pair &operator=(pair &&rhs) {
-    if (this != rhs) {
+  pair &operator=(pair &&rhs)
+  {
+    if (this != rhs)
+    {
       first = toystl::move(rhs.first);
       second = toystl::move(rhs.second);
     }
   }
 
-  template <class _U1, class _U2> pair &operator=(const pair<_U1, _U2> &rhs) {
+  template <class _U1, class _U2>
+  pair &operator=(const pair<_U1, _U2> &rhs)
+  {
     first = rhs.first;
     second = rhs.second;
     return *this;
   }
 
-  template <class _U1, class _U2> pair &operator=(const pair<_U1, _U2> &&rhs) {
+  template <class _U1, class _U2>
+  pair &operator=(const pair<_U1, _U2> &&rhs)
+  {
     first = toystl::move(rhs.first);
     second = toystl::move(rhs.second);
     return *this;
@@ -113,42 +123,48 @@ template <class _T1, class _T2> struct pair {
 
   ~pair() = default;
 
-//   void swap(pair &rhs) {
-//     if (this != rhs) {
-//       toystl::swap(first, rhs.first);
-//       toystl::swap(second, rhs.second);
-//     }
-//   }
+  //   void swap(pair &rhs) {
+  //     if (this != rhs) {
+  //       toystl::swap(first, rhs.first);
+  //       toystl::swap(second, rhs.second);
+  //     }
+  //   }
 };
 
 template <class _T1, class _T2>
-bool operator==(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs) {
+bool operator==(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs)
+{
   return lhs.first == rhs.first && lhs.second == rhs.second;
 }
 
 template <class _T1, class _T2>
-bool operator<(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs) {
+bool operator<(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs)
+{
   return lhs.first < rhs.first ||
          lhs.first == rhs.first && lhs.second < rhs.second;
 }
 
 template <class _T1, class _T2>
-bool operator!=(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs) {
+bool operator!=(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs)
+{
   return !(lhs == rhs);
 }
 
 template <class _T1, class _T2>
-bool operator>(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs) {
+bool operator>(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs)
+{
   return rhs < lhs;
 }
 
 template <class _T1, class _T2>
-bool operator<=(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs) {
+bool operator<=(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs)
+{
   return !(rhs < lhs);
 }
 
 template <class _T1, class _T2>
-bool operator>=(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs) {
+bool operator>=(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs)
+{
   return !(lhs < rhs);
 }
 
@@ -157,7 +173,9 @@ bool operator>=(const pair<_T1, _T2> &lhs, const pair<_T1, _T2> &rhs) {
 //   lhs.swap(rhs);
 // }
 
-template <class _T1, class _T2> pair<_T1, _T2> make_pair(_T1 &&x, _T2 &&y) {
+template <class _T1, class _T2>
+pair<_T1, _T2> make_pair(_T1 &&x, _T2 &&y)
+{
   return pair<_T1, _T2>(toystl::forward<_T1>(x), toystl::forward<_T2>(y));
 }
 

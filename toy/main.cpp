@@ -2,7 +2,8 @@
 
 #include "stl_vector.h"
 
-int main() {
+int main()
+{
   int a[] = {1, 2, 3, 4, 5};
   toystl::vector<int> v1;
   toystl::vector<int> v2(10);
@@ -15,5 +16,5 @@ int main() {
   toystl::vector<int> v8, v9, v10;
   v8 = v7;
   v9 = std::move(v7);
-  v10 = {1, 2, 3, 4, 5, 6, 7, 8, 9};  
+  v10 = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 }

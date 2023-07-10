@@ -14,13 +14,15 @@
 
 __STL_BEGIN_NAMESPACE
 
-template <class _T> class allocator {
+template <class _T>
+class allocator
+{
 public:
   typedef _T value_type;
   typedef _T *pointer;
   typedef const _T *const_pointer;
   typedef _T &reference;
-  typedef const _T& const_reference;
+  typedef const _T &const_reference;
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
 
@@ -36,59 +38,76 @@ public:
   static void construct(pointer __p, _T &&value); // for rvalue
 
   // mutli-construct
-  template <class... Args> static void construct(pointer __p, Args &&...__args);
+  template <class... Args>
+  static void construct(pointer __p, Args &&...__args);
 
   static void destroy(pointer __p);
   static void destroy(pointer __first, pointer __last);
 };
 
-template <class _T> _T* allocator<_T>::allocate() {
+template <class _T>
+_T *allocator<_T>::allocate()
+{
   return static_cast<pointer>(::operator new(sizeof(_T)));
 }
 
-template <class _T> _T* allocator<_T>::allocate(size_type __n) {
+template <class _T>
+_T *allocator<_T>::allocate(size_type __n)
+{
   return __n == 0 ? nullptr
-      : static_cast<pointer>(::operator new(sizeof(_T) * __n));
+                  : static_cast<pointer>(::operator new(sizeof(_T) * __n));
 }
 
-template <class _T> void allocator<_T>::deallocate(reference __p) {
+template <class _T>
+void allocator<_T>::deallocate(reference __p)
+{
   if (nullptr == __p)
     return;
   ::operator delete(__p);
 }
 
 template <class _T>
-void allocator<_T>::deallocate(pointer __p, size_type /* __n */) {
+void allocator<_T>::deallocate(pointer __p, size_type /* __n */)
+{
   if (nullptr == __p)
     return;
   ::operator delete(__p);
 }
 
-template <class _T> void allocator<_T>::construct(pointer __p) {
+template <class _T>
+void allocator<_T>::construct(pointer __p)
+{
   ::new ((void *)__p) _T();
 }
 
 template <class _T>
-void allocator<_T>::construct(pointer __p, const_reference __value) {
+void allocator<_T>::construct(pointer __p, const_reference __value)
+{
   toystl::construct(__p, __value);
 }
 
-template <class _T> void allocator<_T>::construct(pointer __p, _T &&__value) {
+template <class _T>
+void allocator<_T>::construct(pointer __p, _T &&__value)
+{
   toystl::construct(__p, toystl::move(__value));
 }
 
 template <class _T>
 template <class... _Args>
-void allocator<_T>::construct(pointer __p, _Args &&...__args) {
+void allocator<_T>::construct(pointer __p, _Args &&...__args)
+{
   toystl::construct(__p, toystl::forward<_Args>(__args)...);
 }
 
-template <class _T> void allocator<_T>::destroy(pointer __p) {
+template <class _T>
+void allocator<_T>::destroy(pointer __p)
+{
   toystl::destroy(__p);
 }
 
 template <class _T>
-void allocator<_T>::destroy(pointer __first, pointer __last) {
+void allocator<_T>::destroy(pointer __first, pointer __last)
+{
   toystl::destroy(__first, __last);
 }
 

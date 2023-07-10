@@ -1,8 +1,8 @@
 #ifndef __STL_VECTOR_H
 #define __STL_VECTOR_H
 
-// #include <initializer_list>
-#include <cassert>  // for assert
+#include <initializer_list>
+#include <cassert>   // for assert
 #include <stdexcept> // for out_of_range
 
 #include "stl_allocator.h"
@@ -15,10 +15,11 @@
 __STL_BEGIN_NAMESPACE
 
 template <class _T>
-class vector {
+class vector
+{
   static_assert(!std::is_same<bool, _T>::value, "vector<bool> is not supported");
 
- public:
+public:
   typedef toystl::allocator<_T> allocator_type;
   typedef toystl::allocator<_T> data_allocator;
 
@@ -30,35 +31,38 @@ class vector {
   typedef typename allocator_type::size_type size_type;
   typedef typename allocator_type::difference_type difference_type;
 
-  typedef value_type* iterator;
-  typedef const value_type* const_iterator;
+  typedef value_type *iterator;
+  typedef const value_type *const_iterator;
   typedef toystl::reverse_iterator<iterator> reverse_iterator;
   typedef toystl::reverse_iterator<const_iterator> const_reverse_iterator;
 
   allocator_type get_allocator() const { return data_allocator(); }
 
- private:
+private:
   iterator __start;
   iterator __finish;
   iterator __end_of_storage;
 
- public:
+public:
   iterator begin() noexcept { return __start; }
   const_iterator begin() const noexcept { return __start; }
   iterator end() noexcept { return __finish; }
   const_iterator end() const noexcept { return __finish; }
 
   reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
-  const_reverse_iterator rbegin() const noexcept {
+  const_reverse_iterator rbegin() const noexcept
+  {
     return const_reverse_iterator(end());
   }
   reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
-  const_reverse_iterator rend() const noexcept {
+  const_reverse_iterator rend() const noexcept
+  {
     return const_reverse_iterator(begin());
   }
 
   size_type size() const { return static_cast<size_type>(end() - begin()); }
-  size_type capacity() const {
+  size_type capacity() const
+  {
     return static_cast<size_type>(__end_of_storage - begin());
   }
   size_type max_size() const { return static_cast<size_type>(-1) / sizeof(_T); }
@@ -67,40 +71,50 @@ class vector {
   void shrink_to_fit();
   void reserve(size_type __n);
 
-  reference operator[](size_type __n) {
+  reference operator[](size_type __n)
+  {
     assert(__n < size());
     return *(begin() + __n);
   }
-  const_reference operator[](size_type __n) const {
+  const_reference operator[](size_type __n) const
+  {
     assert(__n < size());
     return *(begin() + __n);
   }
 
-  reference at(size_type __n) {
-    if (__n >= size()) throw std::out_of_range("vector");
+  reference at(size_type __n)
+  {
+    if (__n >= size())
+      throw std::out_of_range("vector");
     return (*this)[__n];
   }
-  const_reference at(size_type __n) const {
-    if (__n >= size()) throw std::out_of_range("vector");
+  const_reference at(size_type __n) const
+  {
+    if (__n >= size())
+      throw std::out_of_range("vector");
     return (*this)[__n];
   }
 
-  reference front() {
+  reference front()
+  {
     assert(!empty());
     return *begin();
   }
 
-  const_reference front() const {
+  const_reference front() const
+  {
     assert(!empty());
     return *begin();
   }
 
-  reference back() {
+  reference back()
+  {
     assert(!empty());
     return *(end() - 1);
   }
 
-  const_reference back() const {
+  const_reference back() const
+  {
     assert(!empty());
     return *(end() - 1);
   }
@@ -110,46 +124,51 @@ class vector {
 
   // assign
 
-  void assign(size_type __n, const value_type& __value) {
+  void assign(size_type __n, const value_type &__value)
+  {
     fill_assign(__n, __value);
   }
 
   template <class _InputIter,
             typename std::enable_if<
                 toystl::is_input_iterator<_InputIter>::value, int>::type = 0>
-  void assign(_InputIter __first, _InputIter __last) {
-    assert(!(__last < __first));  // !(last < first) = last >= first
+  void assign(_InputIter __first, _InputIter __last)
+  {
+    assert(!(__last < __first)); // !(last < first) = last >= first
     copy_assign(__first, __last, toystl::iterator_category(__first));
   }
 
-  void assign(std::initializer_list<value_type> __ilist) {
+  void assign(std::initializer_list<value_type> __ilist)
+  {
     copy_assign(__ilist.begin(), __ilist.end(), toystl::forward_iterator_tag());
   }
 
   // emplace // emplac_back
 
   template <class... Args>
-  iterator emplace(const_iterator __pos, Args&&... __args);
+  iterator emplace(const_iterator __pos, Args &&...__args);
 
   template <class... Args>
-  void emplace_back(Args&&... __args);
+  void emplace_back(Args &&...__args);
 
   // push_bakc / pop_back
 
-  void push_back(const value_type& __value);
-  void push_back(value_type&& __value) { emplace_back(toystl::move(__value)); }
+  void push_back(const value_type &__value);
+  void push_back(value_type &&__value) { emplace_back(toystl::move(__value)); }
 
   void pop_back();
 
   // insert
 
-  iterator insert(const_iterator __pos, const value_type& __value);
-  iterator insert(const_iterator __pos, value_type&& __value) {
+  iterator insert(const_iterator __pos, const value_type &__value);
+  iterator insert(const_iterator __pos, value_type &&__value)
+  {
     return emplace(__pos, toystl::move(__value));
   }
 
   iterator insert(const_iterator __pos, size_type __n,
-                  const value_type& __value) {
+                  const value_type &__value)
+  {
     assert(__pos >= begin() && __pos <= end());
     return fill_insert(const_cast<iterator>(__pos), __n, __value);
   }
@@ -157,7 +176,8 @@ class vector {
   template <class _InputIter,
             typename std::enable_if<
                 toystl::is_input_iterator<_InputIter>::value, int>::type = 0>
-  void insert(const_iterator __pos, _InputIter __first, _InputIter __last) {
+  void insert(const_iterator __pos, _InputIter __first, _InputIter __last)
+  {
     assert(__pos >= begin() && __pos <= end() && !(__last < __first));
     copy_insert(const_cast<iterator>(__pos), __first, __last);
   }
@@ -170,64 +190,70 @@ class vector {
 
   // resize / reverse
   void resize(size_type __new_size) { return resize(__new_size, value_type()); }
-  void resize(size_type __new_size, const value_type& __value);
+  void resize(size_type __new_size, const value_type &__value);
 
   void reverse() { toystl::reverse(begin(), end()); }
 
   // swap
-  void swap(vector& __rhs) noexcept;
+  void swap(vector &__rhs) noexcept;
 
- public:
+public:
   vector() noexcept { init_16(); }
 
   explicit vector(size_type __n) { fill_init(__n, value_type()); }
 
-  vector(size_type __n, const value_type& __value) { fill_init(__n, __value); }
+  vector(size_type __n, const value_type &__value) { fill_init(__n, __value); }
 
   template <class _Iter, typename std::enable_if<
-    toystl::is_input_iterator<_Iter>::value, int>::type = 0>
-  vector(_Iter __first, _Iter __last) {
+                             toystl::is_input_iterator<_Iter>::value, int>::type = 0>
+  vector(_Iter __first, _Iter __last)
+  {
     assert(!(__last < __first));
     range_init(__first, __last);
   }
 
-  vector(const vector& __rhs) { range_init(__rhs.begin(), __rhs.end()); }
+  vector(const vector &__rhs) { range_init(__rhs.begin(), __rhs.end()); }
 
-  vector(vector&& __rhs) noexcept
+  vector(vector &&__rhs) noexcept
       : __start(__rhs.__start),
         __finish(__rhs.__finish),
-        __end_of_storage(__rhs.__end_of_storage) {
+        __end_of_storage(__rhs.__end_of_storage)
+  {
     __rhs.__start = nullptr;
     __rhs.__finish = nullptr;
     __rhs.__end_of_storage = nullptr;
   }
 
-  vector(std::initializer_list<value_type> __ilist) {
+  vector(std::initializer_list<value_type> __ilist)
+  {
     range_init(__ilist.begin(), __ilist.end());
   }
 
-  ~vector() {
+  ~vector()
+  {
     destroy_and_recover(__start, __finish, __end_of_storage - __start);
     __start = __finish = __end_of_storage = nullptr;
   }
 
- public:
-  vector& operator=(const vector& __rhs);
-  vector& operator=(vector&& __rhs) noexcept;
+public:
+  vector &operator=(const vector &__rhs);
+  vector &operator=(vector &&__rhs) noexcept;
 
-  vector& operator=(std::initializer_list<value_type> __ilist) {
+  vector &operator=(std::initializer_list<value_type> __ilist)
+  {
     vector tmp(__ilist.begin(), __ilist.end());
     swap(tmp);
     return *this;
   }
 
- private:
+private:
   // helper function
+  size_type get_new_cap(size_type __add_size);
 
   // initialize and destroy
   void init_16() noexcept;
   void init_space(size_type __n, size_type __cap);
-  void fill_init(size_type __n, const value_type& __value);
+  void fill_init(size_type __n, const value_type &__value);
   template <class _Iter>
   void range_init(_Iter __first, _Iter __last);
 
@@ -235,7 +261,7 @@ class vector {
 
   // assign
 
-  void fill_assign(size_type __n, const value_type& __value);
+  void fill_assign(size_type __n, const value_type &__value);
 
   template <class _InputIter>
   void copy_assign(_InputIter __first, _InputIter __last,
@@ -248,14 +274,14 @@ class vector {
   // reallocate
 
   template <class... Args>
-  void reallocate_emplace(iterator __pos, Args&&... args);
-  void reallocate_insert(iterator __pos, const value_type& __value);
+  void reallocate_emplace(iterator __pos, Args &&...args);
+  void reallocate_insert(iterator __pos, const value_type &__value);
 
-  // insert 
-  
-  iterator fill_insert(iterator __pos, size_type __n, const value_type& __value);
+  // insert
+
+  iterator fill_insert(iterator __pos, size_type __n, const value_type &__value);
   template <class _InputIter>
-  void     copy_insert(iterator __pos, _InputIter __first, _InputIter __last);
+  void copy_insert(iterator __pos, _InputIter __first, _InputIter __last);
 
   // shrink_to_fit
 
@@ -263,7 +289,8 @@ class vector {
 };
 
 template <class _T>
-vector<_T>& vector<_T>::operator=(const vector& __rhs) {
+vector<_T> &vector<_T>::operator=(const vector &__rhs)
+{
   if (this != &__rhs)
   {
     const auto len = __rhs.size();
@@ -278,7 +305,7 @@ vector<_T>& vector<_T>::operator=(const vector& __rhs) {
       data_allocator::destroy(i, __finish);
       __finish = __start + len;
     }
-    else 
+    else
     {
       toystl::copy(__rhs.begin(), __rhs.end() + size(), __start);
       toystl::uninitialized_copy(__rhs.begin() + size(), __rhs.end(), __finish);
@@ -289,7 +316,8 @@ vector<_T>& vector<_T>::operator=(const vector& __rhs) {
 }
 
 template <class _T>
-vector<_T>& vector<_T>::operator=(vector&& __rhs) noexcept {
+vector<_T> &vector<_T>::operator=(vector &&__rhs) noexcept
+{
   destroy_and_recover(__start, __finish, __end_of_storage - __start);
   __start = __rhs.__start;
   __finish = __rhs.__finish;
@@ -316,7 +344,7 @@ void vector<_T>::reserve(size_type __n)
 }
 
 template <class _T>
-void vector<_T>::resize(size_type __new_size, const value_type& __value)
+void vector<_T>::resize(size_type __new_size, const value_type &__value)
 {
   if (__new_size < size())
   {
@@ -333,30 +361,69 @@ void vector<_T>::shrink_to_fit()
 {
   if (__finish < __end_of_storage)
   {
-    reinsert(size());
+    size_type old_size = size();
+    auto new_start = data_allocator::allocate(old_size);
+    try
+    {
+      toystl::uninitialized_move(__start, __finish, new_start);
+    }
+    catch (...)
+    {
+      data_allocator::deallocate(new_start, old_size);
+      throw;
+    }
+    data_allocator::deallocate(__start, __end_of_storage - __start);
+    __start = new_start;
+    __finish = new_start + old_size;
+    __end_of_storage = __finish;
   }
+}
+
+template <class _T>
+typename vector<_T>::size_type
+vector<_T>::get_new_cap(size_type __add_size)
+{
+  const auto old_size = capacity();
+  if (old_size > max_size() - __add_size)
+    throw std::length_error("vector<T>'s size too big");
+  if (old_size > max_size() - old_size / 2)
+  {
+    return old_size + __add_size > max_size() - 16
+               ? old_size + __add_size
+               : old_size + __add_size + 16;
+  }
+  const size_type new_size = old_size == 0
+                                 ? toystl::max(__add_size, static_cast<size_type>(16))
+                                 : toystl::max(old_size + old_size / 2, old_size + __add_size);
+  return new_size;
 }
 
 template <class _T>
 template <class... Args>
 typename vector<_T>::iterator vector<_T>::emplace(const_iterator __pos,
-                                                  Args&&... __args) {
+                                                  Args &&...__args)
+{
   assert(__pos >= begin() && __pos <= end());
   iterator xpos = const_cast<iterator>(__pos);
   const size_type n = xpos - __start;
-  if (__finish != __end_of_storage && xpos == end()) {
+  if (__finish != __end_of_storage && xpos == __finish)
+  {
     data_allocator::construct(toystl::address_of(*__finish),
                               toystl::forward<Args>(__args)...);
     ++__finish;
-  } else if (__finish != __end_of_storage) {
+  }
+  else if (__finish != __end_of_storage)
+  {
     auto new_end = __finish;
     data_allocator::construct(toystl::address_of(*__finish), *(__finish - 1));
     ++new_end;
   toystl:
-    copy_backward(xpos, __finish - 1, __end_of_storage);
+    copy_backward(xpos, __finish - 1, __finish);
     *xpos = value_type(toystl::forward<Args>(__args)...);
     __finish = new_end;
-  } else {
+  }
+  else
+  {
     reallocate_emplace(xpos, toystl::forward<Args>(__args)...);
   }
   return begin() + n;
@@ -364,28 +431,37 @@ typename vector<_T>::iterator vector<_T>::emplace(const_iterator __pos,
 
 template <class _T>
 template <class... Args>
-void vector<_T>::emplace_back(Args&&... args) {
-  if (__finish < __end_of_storage) {
+void vector<_T>::emplace_back(Args &&...args)
+{
+  if (__finish < __end_of_storage)
+  {
     data_allocator::construct(toystl::address_of(*__finish),
                               toystl::forward<Args>(args)...);
     ++__finish;
-  } else {
+  }
+  else
+  {
     reallocate_emplace(__finish, toystl::forward<Args>(args)...);
   }
 }
 
 template <class _T>
-void vector<_T>::push_back(const value_type& __value) {
-  if (__finish != __end_of_storage) {
+void vector<_T>::push_back(const value_type &__value)
+{
+  if (__finish != __end_of_storage)
+  {
     data_allocator::construct(toystl::address_of(*__finish), __value);
     ++__finish;
-  } else {
+  }
+  else
+  {
     reallocate_emplace(__finish, __value);
   }
 }
 
 template <class _T>
-void vector<_T>::pop_back() {
+void vector<_T>::pop_back()
+{
   assert(!empty());
   data_allocator::destroy(__finish - 1);
   --__finish;
@@ -393,14 +469,18 @@ void vector<_T>::pop_back() {
 
 template <class _T>
 typename vector<_T>::iterator vector<_T>::insert(const_iterator __pos,
-                                                 const value_type& __value) {
+                                                 const value_type &__value)
+{
   assert(__pos >= begin() && __pos <= end());
   iterator xpos = const_cast<iterator>(__pos);
   const size_type n = __pos - __start;
-  if (__finish != __end_of_storage && xpos == __finish) {
+  if (__finish != __end_of_storage && xpos == __finish)
+  {
     data_allocator::construct(toystl::address_of(*__finish), __value);
     ++__finish;
-  } else if (__finish != __end_of_storage) {
+  }
+  else if (__finish != __end_of_storage)
+  {
     auto new_finish = __finish;
     data_allocator::construct(toystl::address_of(*__finish), *(__finish - 1));
     ++new_finish;
@@ -408,15 +488,18 @@ typename vector<_T>::iterator vector<_T>::insert(const_iterator __pos,
     toystl::copy_backward(xpos, __finish - 1, __finish);
     *xpos = toystl::move(value_copy);
     __finish = new_finish;
-  } else {
+  }
+  else
+  {
     reallocate_insert(xpos, __value);
   }
   return begin() + n;
 }
 
 template <class _T>
-typename vector<_T>::iterator 
-vector<_T>::erase(const_iterator __pos) {
+typename vector<_T>::iterator
+vector<_T>::erase(const_iterator __pos)
+{
   assert(__pos >= begin() && __pos <= end());
   iterator xpos = const_cast<iterator>(begin() + (__pos - begin()));
   toystl::move(xpos + 1, __finish, xpos);
@@ -426,19 +509,23 @@ vector<_T>::erase(const_iterator __pos) {
 }
 
 template <class _T>
-typename vector<_T>::iterator 
-vector<_T>::erase(const_iterator __first, const_iterator __last) {
+typename vector<_T>::iterator
+vector<_T>::erase(const_iterator __first, const_iterator __last)
+{
   assert(__first >= begin() && __last <= end() && !(__last < __first));
   const auto n = __first - begin();
   iterator r = begin() + n;
-  destroy_and_recover(r + (__last - __first), __finish, __last - __first);
+  data_allocator::destroy(toystl::move(r + (__last - __first), __finish, r),
+                          __finish);
   __finish = __finish - (__last - __first);
   return __start + n;
 }
 
 template <class _T>
-void vector<_T>::swap(vector<_T>& __rhs) noexcept {
-  if (this != &__rhs) {
+void vector<_T>::swap(vector<_T> &__rhs) noexcept
+{
+  if (this != &__rhs)
+  {
     toystl::swap(__start, __rhs.__start);
     toystl::swap(__finish, __rhs.__finish);
     toystl::swap(__end_of_storage, __rhs.__end_of_storage);
@@ -447,12 +534,16 @@ void vector<_T>::swap(vector<_T>& __rhs) noexcept {
 // helper function
 
 template <class _T>
-void vector<_T>::init_16() noexcept {
-  try {
+void vector<_T>::init_16() noexcept
+{
+  try
+  {
     __start = data_allocator::allocate(16);
     __finish = __start;
     __end_of_storage = __start + 16;
-  } catch (...) {
+  }
+  catch (...)
+  {
     __start = nullptr;
     __finish = nullptr;
     __end_of_storage = nullptr;
@@ -460,12 +551,16 @@ void vector<_T>::init_16() noexcept {
 }
 
 template <class _T>
-void vector<_T>::init_space(size_type __n, size_type __cap) {
-  try {
+void vector<_T>::init_space(size_type __n, size_type __cap)
+{
+  try
+  {
     __start = data_allocator::allocate(__cap);
     __finish = __start + __n;
     __end_of_storage = __start + __cap;
-  } catch (...) {
+  }
+  catch (...)
+  {
     __start = nullptr;
     __finish = nullptr;
     __end_of_storage = nullptr;
@@ -474,7 +569,8 @@ void vector<_T>::init_space(size_type __n, size_type __cap) {
 }
 
 template <class _T>
-void vector<_T>::fill_init(size_type __n, const value_type& __value) {
+void vector<_T>::fill_init(size_type __n, const value_type &__value)
+{
   const size_type init_size = toystl::max(static_cast<size_type>(16), __n);
   init_space(__n, init_size);
   toystl::uninitialized_fill_n(__start, __n, __value);
@@ -482,7 +578,8 @@ void vector<_T>::fill_init(size_type __n, const value_type& __value) {
 
 template <class _T>
 template <class _Iter>
-void vector<_T>::range_init(_Iter __first, _Iter __last) {
+void vector<_T>::range_init(_Iter __first, _Iter __last)
+{
   const size_type distance = toystl::distance(__first, __last);
   const size_type init_size = toystl::max(
       static_cast<size_type>(16), static_cast<size_type>(__last - __first));
@@ -492,34 +589,47 @@ void vector<_T>::range_init(_Iter __first, _Iter __last) {
 
 template <class _T>
 void vector<_T>::destroy_and_recover(iterator __first, iterator __last,
-                                     size_type __n) {
+                                     size_type __n)
+{
   data_allocator::destroy(__first, __last);
   data_allocator::deallocate(__first, __n);
 }
 
 template <class _T>
-void vector<_T>::fill_assign(size_type __n, const value_type& __value) {
-  if (__n > capacity()) {
+void vector<_T>::fill_assign(size_type __n, const value_type &__value)
+{
+  if (__n > capacity())
+  {
     vector tmp(__n, __value);
     swap(tmp);
-  } else if (__n > size()) {
+  }
+  else if (__n > size())
+  {
     toystl::fill(begin(), end(), __value);
     __finish = toystl::uninitialized_fill_n(__finish, __n - size(), __value);
-  } else {
+  }
+  else
+  {
     erase(toystl::fill_n(begin(), __n, __value), end());
   }
 }
 
 template <class _T>
-template<class _InputIter> void vector<_T>::copy_assign(
-    _InputIter __first, _InputIter __last, toystl::input_iterator_tag) {
+template <class _InputIter>
+void vector<_T>::copy_assign(_InputIter __first, _InputIter __last,
+                             toystl::input_iterator_tag)
+{
   auto __cur = begin();
-  for (; __first != __last && __cur != end(); ++__cur, ++__first) {
+  for (; __first != __last && __cur != end(); ++__cur, ++__first)
+  {
     *__cur = *__first;
   }
-  if (__first == __last) {
+  if (__first == __last)
+  {
     erase(__cur, end());
-  } else {
+  }
+  else
+  {
     insert(end(), __first, __last);
   }
 }
@@ -527,16 +637,22 @@ template<class _InputIter> void vector<_T>::copy_assign(
 template <class _T>
 template <class _ForwardIter>
 void vector<_T>::copy_assign(_ForwardIter __first, _ForwardIter __last,
-                             toystl::forward_iterator_tag) {
+                             toystl::forward_iterator_tag)
+{
   const size_type distance = toystl::distance(__first, __last);
-  if (distance > capacity()) {
-    vector tmp(__fill, __last);
+  if (distance > capacity())
+  {
+    vector tmp(__first, __last);
     swap(tmp);
-  } else if (size() >= distance) {
+  }
+  else if (size() >= distance)
+  {
     auto new_end = toystl::copy(__first, __last, __start);
     data_allocator::destroy(new_end, __end_of_storage);
     __end_of_storage = new_end;
-  } else {
+  }
+  else
+  {
     auto mid = __first;
     toystl::advance(mid, size());
     toystl::copy(__first, mid, __start);
@@ -547,18 +663,22 @@ void vector<_T>::copy_assign(_ForwardIter __first, _ForwardIter __last,
 
 template <class _T>
 template <class... Args>
-void vector<_T>::reallocate_emplace(iterator __pos, Args&&... args) {
+void vector<_T>::reallocate_emplace(iterator __pos, Args &&...args)
+{
   const size_type old_size = size();
   const size_type new_size = old_size ? 2 * old_size : 1;
   auto new_start = data_allocator::allocate(new_size);
   auto new_finish = new_start;
-  try {
+  try
+  {
     new_finish = toystl::uninitialized_move(__start, __pos, new_start);
     data_allocator::construct(toystl::address_of(*new_finish),
                               toystl::forward<Args>(args)...);
     ++new_finish;
     new_finish = toystl::uninitialized_move(__pos, __finish, new_finish);
-  } catch (...) {
+  }
+  catch (...)
+  {
     data_allocator::deallocate(new_start, new_size);
     throw;
   }
@@ -569,18 +689,22 @@ void vector<_T>::reallocate_emplace(iterator __pos, Args&&... args) {
 }
 
 template <class _T>
-void vector<_T>::reallocate_insert(iterator __pos, const value_type& __value) {
+void vector<_T>::reallocate_insert(iterator __pos, const value_type &__value)
+{
   const size_type old_size = size();
   const size_type new_size = old_size ? 2 * old_size : 1;
   auto new_start = data_allocator::allocate(new_size);
   auto new_finish = new_start;
-  const value_type& value_copy = __value;
-  try {
+  const value_type &value_copy = __value;
+  try
+  {
     new_finish = toystl::uninitialized_move(__start, __pos, new_start);
     data_allocator::construct(toystl::address_of(*new_finish), value_copy);
     ++new_finish;
     new_finish = toystl::uninitialized_move(__pos, __finish, new_finish);
-  } catch (...) {
+  }
+  catch (...)
+  {
     data_allocator::deallocate(new_start, new_size);
     throw;
   }
@@ -590,37 +714,142 @@ void vector<_T>::reallocate_insert(iterator __pos, const value_type& __value) {
   __end_of_storage = new_start + new_size;
 }
 
+template <class _T>
+typename vector<_T>::iterator
+vector<_T>::fill_insert(iterator __pos, size_type __n, const value_type &__value)
+{
+  if (__n == 0)
+    return __pos;
+  const size_type xpos = __pos - __start;
+  const value_type value_copy = __value;
+  if (static_cast<size_type>(__end_of_storage - __finish) >= __n)
+  {
+    const size_type after_elems = __finish - __pos;
+    auto old_finish = __finish;
+    if (after_elems > __n)
+    {
+      toystl::uninitialized_copy(__finish - __n, __finish, __finish);
+      __finish += __n;
+      toystl::move_backward(__pos, old_finish - __n, old_finish);
+      toystl::uninitialized_fill_n(__pos, __n, value_copy);
+    }
+    else
+    {
+      __finish = toystl::uninitialized_fill_n(__finish, __n - after_elems, value_copy);
+      __finish = toystl::uninitialized_move(__pos, old_finish, __finish);
+      toystl::uninitialized_fill_n(__pos, after_elems, value_copy);
+    }
+  }
+  else
+  {
+    const auto new_size = get_new_cap(__n);
+    auto new_start = data_allocator::allocate(new_size);
+    auto new_finish = new_start;
+    try
+    {
+      new_finish = toystl::uninitialized_move(__start, __pos, new_start);
+      new_finish = toystl::uninitialized_fill_n(new_finish, __n, value_copy);
+      new_finish = toystl::uninitialized_move(__pos, __finish, new_finish);
+    }
+    catch (...)
+    {
+      destroy_and_recover(new_start, new_finish, new_size);
+      throw;
+    }
+    data_allocator::deallocate(__start, __end_of_storage - __start);
+    __start = new_start;
+    __finish = new_finish;
+    __end_of_storage = new_start + new_size;
+  }
+  return __start + xpos;
+}
+
+template <class _T>
+template <class _InputIter>
+void vector<_T>::
+    copy_insert(iterator __pos, _InputIter __first, _InputIter __last)
+{
+  if (__first == __last)
+    return;
+  const auto n = toystl::distance(__first, __last);
+  if ((__end_of_storage - __finish) >= n)
+  {
+    const auto after_elems = __finish - __pos;
+    auto old_finish = __finish;
+    if (after_elems > n)
+    {
+      __finish = toystl::uninitialized_copy(__finish - n, __finish, __finish);
+      toystl::move_backward(__pos, old_finish - n, old_finish);
+      toystl::uninitialized_copy(__first, __last, __pos);
+    }
+    else
+    {
+      auto mid = __first;
+      toystl::advance(mid, after_elems);
+      __finish = toystl::uninitialized_copy(mid, __last, __finish);
+      __finish = toystl::uninitialized_move(__pos, old_finish, __finish);
+      toystl::uninitialized_copy(__first, mid, __pos);
+    }
+  }
+  else
+  {
+    const auto new_size = get_new_cap(n);
+    auto new_start = data_allocator::allocate(new_size);
+    auto new_finish = new_start;
+    try
+    {
+      new_finish = toystl::uninitialized_move(__start, __pos, new_start);
+      new_finish = toystl::uninitialized_copy(__first, __last, new_finish);
+      new_finish = toystl::uninitialized_move(__pos, __finish, new_finish);
+    }
+    catch (...)
+    {
+      destroy_and_recover(new_start, new_finish, new_size);
+      throw;
+    }
+    data_allocator::deallocate(__start, __end_of_storage - __start);
+    __start = new_start;
+    __finish = new_finish;
+    __end_of_storage = new_start + new_size;
+  }
+}
 
 // overload the vector compare operation.
 template <class _T>
-bool operator==(const vector<_T>& __lhs, const vector<_T>& __rhs) {
+bool operator==(const vector<_T> &__lhs, const vector<_T> &__rhs)
+{
   return __lhs.size() == __rhs.size() &&
          toystl::equal(__lhs.begin(), __lhs.end(), __rhs.begin());
 }
 
 template <class _T>
-bool operator<(const vector<_T>& __lhs, const vector<_T>& __rhs) {
+bool operator<(const vector<_T> &__lhs, const vector<_T> &__rhs)
+{
   return toystl::lexicographical_compare(__lhs.begin(), __lhs.end(), __rhs.begin(),
                                          __rhs.end());
 }
 
 template <class _T>
-bool operator!=(const vector<_T>& __lhs, const vector<_T>& __rhs) {
+bool operator!=(const vector<_T> &__lhs, const vector<_T> &__rhs)
+{
   return !(__lhs == __rhs);
 }
 
 template <class _T>
-bool operator>(const vector<_T>& __lhs, const vector<_T>& __rhs) {
+bool operator>(const vector<_T> &__lhs, const vector<_T> &__rhs)
+{
   return __rhs < __lhs;
 }
 
 template <class _T>
-bool operator<=(const vector<_T>& __lhs, const vector<_T>& __rhs) {
+bool operator<=(const vector<_T> &__lhs, const vector<_T> &__rhs)
+{
   return !(__rhs < __lhs);
 }
 
 template <class _T>
-bool operator>=(const vector<_T>& __lhs, const vector<_T>& __rhs) {
+bool operator>=(const vector<_T> &__lhs, const vector<_T> &__rhs)
+{
   return !(__lhs < __rhs);
 }
 
