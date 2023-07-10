@@ -27,24 +27,25 @@ struct iterator {
 
 // iterator traits
 
-template <class _T>
-struct _has_iterator_cat {
+template <class_T>
+struct has_iterator_cat {
 private:
   struct two {
     char a;
     char b;
   };
-  template <class _U> struct two test(...);
-  template <class _U> static char test(typename _U::iterator_category* = 0);
+  template <class _U> static two test(...);
+  template <class _U> static char test(typename _U::iterator_category * = 0);
 public:
   static const bool value = sizeof(test<_T>(0)) == sizeof(char);
 };
 
 template <class _Iterator, bool>
-struct _iterator_traits_impl {
-};
+struct _iterator_traits_impl {};
 
-template <class _Iterator> struct _iterator_traits_impl<_Iterator, true> {
+template <class _Iterator> 
+struct _iterator_traits_impl<_Iterator, true>
+{
   typedef typename _Iterator::iterator_category     iterator_category;
   typedef typename _Iterator::value_type            value_type;
   typedef typename _Iterator::difference_type       difference_type;
@@ -65,10 +66,10 @@ struct _iterator_traits_helper<_Iterator, true>
 
 template <class _Iterator>
 struct iterator_traits
-    : public _iterator_traits_helper<_Iterator, _has_iterator_cat<_Iterator>::value> 
-{};
+    : public _iterator_traits_helper<_Iterator, has_iterator_cat<_Iterator>::value> {};
 
-template <class _T> struct iterator_traits<_T *> {
+template <class _T> 
+struct iterator_traits<_T *> {
   typedef random_access_iterator_tag              iterator_category;
   typedef _T                                      value_type;
   typedef ptrdiff_t                               difference_type;
@@ -85,12 +86,12 @@ struct iterator_traits<const _T *> {
   typedef const _T&                               reference;
 };
 
-template <class _T1, class _T2,
-          bool = _has_iterator_cat<iterator_traits<_T1>>::value>
+template <class _T, class _U, bool = has_iterator_cat<iterator_traits<_T>>::value>
 struct has_iterator_cat_of
     : public _bool_constant<std::is_convertible<
-      typename iterator_traits<_T1>::iterator_category, _T2>::value> 
+      typename iterator_traits<_T>::iterator_category, _U>::value>
 {};
+
 
 template <class _T1, class _T2>
 struct has_iterator_cat_of<_T1, _T2, false> : public false_type {};
