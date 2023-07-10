@@ -3,9 +3,11 @@
 
 // #include <initializer_list>
 #include <cassert>  // for assert
+#include <stdexcept> // for out_of_range
 
 #include "stl_allocator.h"
 #include "stl_algobase.h"
+#include "stl_algo.h"
 #include "stl_config.h"
 #include "stl_iterator.h"
 #include "stl_uninitialized.h"
@@ -63,6 +65,7 @@ class vector {
   bool empty() const { return begin() == end(); }
 
   void shrink_to_fit();
+  void reserve(size_type __n);
 
   reference operator[](size_type __n) {
     assert(__n < size());
@@ -163,13 +166,13 @@ class vector {
   iterator erase(const_iterator __pos);
   iterator erase(const_iterator __first, const_iterator __last);
 
-  void clear() { earse(begin(), end()); }
+  void clear() { erase(begin(), end()); }
 
   // resize / reverse
   void resize(size_type __new_size) { return resize(__new_size, value_type()); }
   void resize(size_type __new_size, const value_type& __value);
 
-  void reverse(size_type __n);
+  void reverse() { toystl::reverse(begin(), end()); }
 
   // swap
   void swap(vector& __rhs) noexcept;
@@ -298,11 +301,26 @@ vector<_T>& vector<_T>::operator=(vector&& __rhs) noexcept {
 }
 
 template <class _T>
+void vector<_T>::reserve(size_type __n)
+{
+  if (capacity() < __n)
+  {
+    const auto old_size = size();
+    auto tmp = data_allocator::allocate(__n);
+    toystl::uninitialized_move(__start, __finish, tmp);
+    destroy_and_recover(__start, __finish, __end_of_storage - __start);
+    __start = tmp;
+    __finish = tmp + old_size;
+    __end_of_storage = __start + __n;
+  }
+}
+
+template <class _T>
 void vector<_T>::resize(size_type __new_size, const value_type& __value)
 {
   if (__new_size < size())
   {
-    earse(begin() + __new_size, end());
+    erase(begin() + __new_size, end());
   }
   else
   {
